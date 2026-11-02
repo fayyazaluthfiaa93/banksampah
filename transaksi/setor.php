@@ -1,7 +1,4 @@
 <?php
-// ============================================================
-// BAGIAN 1: LOGIKA (tidak boleh ada output HTML di sini)
-// ============================================================
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
