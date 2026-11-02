@@ -1,10 +1,10 @@
 <?php
-\error_reporting(E_ALL);
+error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 include __DIR__ . '/../connect.php';
 
-$script_alert = ''; // alert error ditampilkan setelah HTML dirender
+$script_alert = '';
 
 if (isset($_POST['submit'])) {
     $no_transaksi      = trim($_POST['no_transaksi'] ?? '');
