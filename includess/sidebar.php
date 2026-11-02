@@ -1,4 +1,10 @@
 <?php
+/*
+ * sidebar.php
+ * Komponen saja: <style> + <aside> + <script>.
+ * JANGAN include file ini sebelum <!DOCTYPE>. Include di DALAM <div class="app">,
+ * sebelum <div class="content">.
+ */
 
 $base = '/banksampah/';
 
@@ -11,11 +17,13 @@ $isKategori  = $in('kategori');
 $isPetugas   = $in('petugas');
 $isHome      = !($isTransaksi || $isNasabah || $isKategori || $isPetugas);
 
-$active = fn($cond) => $cond ? ' active' : '';
-$subActive = fn($file) => strpos($uri, $base . 'transaksi/' . $file) !== false ? ' active' : '';
+$active    = fn($cond) => $cond ? ' active' : '';
+$subActive = fn($file) => strpos($uri, $base . 'transaksi/' . $file) !== false ? 'active' : '';
 ?>
 <style>
   :root {
+    --pg-bg: #f4f5f9;
+    --pg-text: #14161a;
     --sb-bg: #ffffff;
     --sb-text: #14161a;
     --sb-muted: #9aa0ab;
@@ -28,6 +36,8 @@ $subActive = fn($file) => strpos($uri, $base . 'transaksi/' . $file) !== false ?
   }
   @media (prefers-color-scheme: dark) {
     :root {
+      --pg-bg: #121317;
+      --pg-text: #f1f2f5;
       --sb-bg: #1b1d22;
       --sb-text: #f1f2f5;
       --sb-muted: #7d8391;
@@ -38,6 +48,7 @@ $subActive = fn($file) => strpos($uri, $base . 'transaksi/' . $file) !== false ?
     }
   }
 
+  /* Layout dasar: sidebar + konten sejajar */
   .app { display: flex; min-height: 100vh; gap: 16px; padding: 16px; box-sizing: border-box; }
   .content { flex: 1; min-width: 0; }
 
@@ -135,9 +146,9 @@ $subActive = fn($file) => strpos($uri, $base . 'transaksi/' . $file) !== false ?
         <svg class="caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <ul class="sb-sub">
-        <li><a class="<?= trim($subActive('setor')) ?>"   href="<?= $base ?>transaksi/setor.php">Setor</a></li>
-        <li><a class="<?= trim($subActive('tarik')) ?>"   href="<?= $base ?>transaksi/tarik.php">Tarik</a></li>
-        <li><a class="<?= trim($subActive('riwayat')) ?>" href="<?= $base ?>transaksi/riwayat.php">Riwayat</a></li>
+        <li><a class="<?= $subActive('setor') ?>"   href="<?= $base ?>transaksi/setor.php">Setor</a></li>
+        <li><a class="<?= $subActive('tarik') ?>"   href="<?= $base ?>transaksi/tarik.php">Tarik</a></li>
+        <li><a class="<?= $subActive('riwayat') ?>" href="<?= $base ?>transaksi/riwayat.php">Riwayat</a></li>
       </ul>
     </li>
 
@@ -167,28 +178,34 @@ $subActive = fn($file) => strpos($uri, $base . 'transaksi/' . $file) !== false ?
 
 <script>
 (function () {
-  var sb = document.getElementById('sidebar');
-  var toggle = document.getElementById('sbToggle');
-  var trxBtn = document.getElementById('trxBtn');
-  var KEY = 'sb-collapsed';
+  var sb      = document.getElementById('sidebar');
+  var toggle  = document.getElementById('sbToggle');
+  var trxBtn  = document.getElementById('trxBtn');
+  var KEY     = 'sb-collapsed';
 
-  try { 
-    var savedState = localStorage.getItem(KEY);
-    // Jika belum pernah disimpan sama sekali ATAU statusnya '1', buat jadi collapsed (tertutup)
-    if (savedState === '1' || savedState === null) {
-      sb.classList.add('collapsed');
-    }
-  } catch (e) {}
+  function save(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
+
+  // Terapkan state awal tanpa animasi (biar tidak "berkedip" tiap pindah halaman)
+  sb.style.transition = 'none';
+  try {
+    var saved = localStorage.getItem(KEY);
+    // Default: tertutup bila belum pernah disimpan
+    if (saved === '1' || saved === null) sb.classList.add('collapsed');
+  } catch (e) {
+    sb.classList.add('collapsed');
+  }
+  void sb.offsetWidth;          // paksa reflow
+  sb.style.transition = '';     // aktifkan lagi animasi
 
   toggle.addEventListener('click', function () {
     sb.classList.toggle('collapsed');
-    try { localStorage.setItem(KEY, sb.classList.contains('collapsed') ? '1' : '0'); } catch (e) {}
+    save(sb.classList.contains('collapsed') ? '1' : '0');
   });
 
   trxBtn.addEventListener('click', function () {
     if (sb.classList.contains('collapsed')) {
       sb.classList.remove('collapsed');
-      try { localStorage.setItem(KEY, '0'); } catch (e) {}
+      save('0');
     }
     var li = trxBtn.parentElement;
     li.classList.toggle('open');
