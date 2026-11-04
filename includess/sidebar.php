@@ -6,7 +6,7 @@
  * sebelum <div class="content">.
  */
 
-$base = '/banksampah/';
+$base = '/banksampah/project/';
 
 $uri = $_SERVER['REQUEST_URI'] ?? '';
 $in  = fn($folder) => strpos($uri, $base . $folder . '/') !== false;
@@ -17,8 +17,8 @@ $isKategori  = $in('kategori');
 $isPetugas   = $in('petugas');
 $isHome      = !($isTransaksi || $isNasabah || $isKategori || $isPetugas);
 
-$active    = fn($cond) => $cond ? ' active' : '';
-$subActive = fn($file) => strpos($uri, $base . 'transaksi/' . $file) !== false ? 'active' : '';
+$active      = fn($cond) => $cond ? ' active' : '';
+$subActive   = fn($folder, $file) => strpos($uri, $base . $folder . '/' . $file) !== false ? 'active' : '';
 ?>
 <style>
   :root {
@@ -139,16 +139,17 @@ $subActive = fn($file) => strpos($uri, $base . 'transaksi/' . $file) !== false ?
       </a>
     </li>
 
+    <!-- DROPDOWN TRANSAKSI -->
     <li class="has-sub<?= $isTransaksi ? ' open' : '' ?>">
-      <button class="sb-item<?= $active($isTransaksi) ?>" type="button" id="trxBtn" title="Transaksi" aria-expanded="<?= $isTransaksi ? 'true' : 'false' ?>">
+      <button class="sb-item<?= $active($isTransaksi) ?> sb-dropdown-btn" type="button" title="Transaksi" aria-expanded="<?= $isTransaksi ? 'true' : 'false' ?>">
         <svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="M2.5 10h19"/><path d="M7 15h3"/></svg>
         <span class="txt">Transaksi</span>
         <svg class="caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <ul class="sb-sub">
-        <li><a class="<?= $subActive('setor') ?>"   href="<?= $base ?>transaksi/setor.php">Setor</a></li>
-        <li><a class="<?= $subActive('tarik') ?>"   href="<?= $base ?>transaksi/tarik.php">Tarik</a></li>
-        <li><a class="<?= $subActive('riwayat') ?>" href="<?= $base ?>transaksi/riwayat.php">Riwayat</a></li>
+        <li><a class="<?= $subActive('transaksi', 'setor.php') ?>"   href="<?= $base ?>transaksi/setor.php">Setor</a></li>
+        <li><a class="<?= $subActive('transaksi', 'tarik.php') ?>"   href="<?= $base ?>transaksi/tarik.php">Tarik</a></li>
+        <li><a class="<?= $subActive('transaksi', 'riwayat.php') ?>" href="<?= $base ?>transaksi/riwayat.php">Riwayat</a></li>
       </ul>
     </li>
 
@@ -159,11 +160,17 @@ $subActive = fn($file) => strpos($uri, $base . 'transaksi/' . $file) !== false ?
       </a>
     </li>
 
-    <li>
-      <a class="sb-item<?= $active($isKategori) ?>" href="<?= $base ?>kategori/index.php" title="Kategori">
+    <!-- DROPDOWN KATEGORI -->
+    <li class="has-sub<?= $isKategori ? ' open' : '' ?>">
+      <button class="sb-item<?= $active($isKategori) ?> sb-dropdown-btn" type="button" title="Kategori" aria-expanded="<?= $isKategori ? 'true' : 'false' ?>">
         <svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12.5V4a1 1 0 011-1h8.5a1 1 0 01.7.3l7.5 7.5a1 1 0 010 1.4l-8.5 8.5a1 1 0 01-1.4 0l-7.5-7.5a1 1 0 01-.3-.7z"/><circle cx="8" cy="8" r="1.4"/></svg>
         <span class="txt">Kategori</span>
-      </a>
+        <svg class="caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <ul class="sb-sub">
+        <li><a class="<?= $subActive('kategori', 'index.php') ?>" href="<?= $base ?>kategori/index.php">Daftar Kategori</a></li>
+        <li><a class="<?= $subActive('kategori', 'tambah.php') ?>" href="<?= $base ?>kategori/tambah.php">Tambah Kategori</a></li>
+      </ul>
     </li>
 
     <li>
@@ -178,38 +185,40 @@ $subActive = fn($file) => strpos($uri, $base . 'transaksi/' . $file) !== false ?
 
 <script>
 (function () {
-  var sb      = document.getElementById('sidebar');
-  var toggle  = document.getElementById('sbToggle');
-  var trxBtn  = document.getElementById('trxBtn');
-  var KEY     = 'sb-collapsed';
+  var sb           = document.getElementById('sidebar');
+  var toggle       = document.getElementById('sbToggle');
+  var dropdownBtns = document.querySelectorAll('.sb-dropdown-btn');
+  var KEY          = 'sb-collapsed';
 
   function save(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
 
-  // Terapkan state awal tanpa animasi (biar tidak "berkedip" tiap pindah halaman)
+  // Terapkan state awal tanpa animasi (biar tidak berkedip saat pindah halaman)
   sb.style.transition = 'none';
   try {
     var saved = localStorage.getItem(KEY);
-    // Default: tertutup bila belum pernah disimpan
     if (saved === '1' || saved === null) sb.classList.add('collapsed');
   } catch (e) {
     sb.classList.add('collapsed');
   }
-  void sb.offsetWidth;          // paksa reflow
-  sb.style.transition = '';     // aktifkan lagi animasi
+  void sb.offsetWidth; // paksa reflow
+  sb.style.transition = ''; // aktifkan animasi kembali
 
   toggle.addEventListener('click', function () {
     sb.classList.toggle('collapsed');
     save(sb.classList.contains('collapsed') ? '1' : '0');
   });
 
-  trxBtn.addEventListener('click', function () {
-    if (sb.classList.contains('collapsed')) {
-      sb.classList.remove('collapsed');
-      save('0');
-    }
-    var li = trxBtn.parentElement;
-    li.classList.toggle('open');
-    trxBtn.setAttribute('aria-expanded', li.classList.contains('open'));
+  // Handler klik untuk semua menu dropdown (Transaksi & Kategori)
+  dropdownBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      if (sb.classList.contains('collapsed')) {
+        sb.classList.remove('collapsed');
+        save('0');
+      }
+      var li = btn.parentElement;
+      li.classList.toggle('open');
+      btn.setAttribute('aria-expanded', li.classList.contains('open'));
+    });
   });
 })();
 </script>
