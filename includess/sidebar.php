@@ -6,7 +6,9 @@
  * sebelum <div class="content">.
  */
 
-$base = '/banksampah/project/';
+// Deteksi base URL secara otomatis berdasarkan script yang berjalan
+$scriptDir = dirname($_SERVER['SCRIPT_NAME']);
+$base = (strpos($scriptDir, 'project') !== false) ? '/banksampah/project/' : '/banksampah/';
 
 $uri = $_SERVER['REQUEST_URI'] ?? '';
 $in  = fn($folder) => strpos($uri, $base . $folder . '/') !== false;
@@ -17,8 +19,8 @@ $isKategori  = $in('kategori');
 $isPetugas   = $in('petugas');
 $isHome      = !($isTransaksi || $isNasabah || $isKategori || $isPetugas);
 
-$active      = fn($cond) => $cond ? ' active' : '';
-$subActive   = fn($folder, $file) => strpos($uri, $base . $folder . '/' . $file) !== false ? 'active' : '';
+$active    = fn($cond) => $cond ? ' active' : '';
+$subActive = fn($folder, $file) => strpos($uri, $base . $folder . '/' . $file) !== false ? 'active' : '';
 ?>
 <style>
   :root {
@@ -147,8 +149,8 @@ $subActive   = fn($folder, $file) => strpos($uri, $base . $folder . '/' . $file)
         <svg class="caret" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg>
       </button>
       <ul class="sb-sub">
-        <li><a class="<?= $subActive('transaksi', 'setor.php') ?>"   href="<?= $base ?>transaksi/setor.php">Setor</a></li>
-        <li><a class="<?= $subActive('transaksi', 'tarik.php') ?>"   href="<?= $base ?>transaksi/tarik.php">Tarik</a></li>
+        <li><a class="<?= $subActive('transaksi', 'setor.php') ?>" href="<?= $base ?>transaksi/setor.php">Setor</a></li>
+        <li><a class="<?= $subActive('transaksi', 'tarik.php') ?>" href="<?= $base ?>transaksi/tarik.php">Tarik</a></li>
         <li><a class="<?= $subActive('transaksi', 'riwayat.php') ?>" href="<?= $base ?>transaksi/riwayat.php">Riwayat</a></li>
       </ul>
     </li>
@@ -185,23 +187,25 @@ $subActive   = fn($folder, $file) => strpos($uri, $base . $folder . '/' . $file)
 
 <script>
 (function () {
-  var sb           = document.getElementById('sidebar');
+  var sb             = document.getElementById('sidebar');
   var toggle       = document.getElementById('sbToggle');
   var dropdownBtns = document.querySelectorAll('.sb-dropdown-btn');
   var KEY          = 'sb-collapsed';
 
   function save(v) { try { localStorage.setItem(KEY, v); } catch (e) {} }
 
-  // Terapkan state awal tanpa animasi (biar tidak berkedip saat pindah halaman)
+  // Terapkan state awal tanpa animasi (biar tidak "berkedip" tiap pindah halaman)
   sb.style.transition = 'none';
   try {
     var saved = localStorage.getItem(KEY);
+    // Default: tertutup bila belum pernah disimpan
     if (saved === '1' || saved === null) sb.classList.add('collapsed');
   } catch (e) {
     sb.classList.add('collapsed');
   }
-  void sb.offsetWidth; // paksa reflow
-  sb.style.transition = ''; // aktifkan animasi kembali
+
+  void sb.offsetWidth;         // paksa reflow
+  sb.style.transition = '';    // aktifkan lagi animasi
 
   toggle.addEventListener('click', function () {
     sb.classList.toggle('collapsed');
