@@ -1,5 +1,5 @@
 <?php
-include '../connect.php';
+include __DIR__ . '/../connect.php';
 
 if (isset($_GET['id'])) {
     $id_nasabah = $_GET['id'];
