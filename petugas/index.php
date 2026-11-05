@@ -36,25 +36,78 @@ if (isset($_GET['status'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Petugas</title>
     <style>
-        body { font-family: Arial, sans-serif; background: #f4f6f8; margin: 0; padding: 30px; }
-        .box { max-width: 800px; margin: auto; background: #fff; padding: 24px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,.1); }
-        h2 { margin-top: 0; }
-        .atas { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
-        .cari { display: flex; gap: 6px; }
-        .cari input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 10px; border-bottom: 1px solid #e0e0e0; text-align: left; font-size: 14px; }
-        th { background: #2e7d32; color: #fff; }
-        tr:hover td { background: #f1f8f1; }
-        .btn { padding: 7px 12px; border: 0; border-radius: 4px; color: #fff; text-decoration: none; font-size: 13px; cursor: pointer; display: inline-block; }
-        .btn-tambah { background: #2e7d32; }
-        .btn-cari { background: #455a64; }
-        .btn-edit { background: #1565c0; }
-        .btn-hapus { background: #c62828; }
-        .notif { padding: 10px 14px; border-radius: 4px; margin-bottom: 14px; }
-        .sukses { background: #e8f5e9; color: #2e7d32; }
-        .gagal { background: #ffebee; color: #c62828; }
-        .kosong { text-align: center; color: #777; padding: 20px; }
+        body { 
+            font-family: Arial, sans-serif; 
+            background: #f4f6f8; 
+            margin: 0; 
+            padding: 30px; }
+        .box { 
+            max-width: 800px; 
+            margin: auto; 
+            background: #fff; 
+            padding: 24px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 8px rgba(0,0,0,.1); }
+        h2 { 
+            margin-top: 0; }
+        .atas { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-wrap: wrap; 
+            gap: 10px; 
+            margin-bottom: 16px; }
+        .cari { 
+            display: flex; 
+            gap: 6px; }
+        .cari input { 
+            padding: 8px; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; }
+        th, td { 
+            padding: 10px; 
+            border-bottom: 1px solid #e0e0e0; 
+            text-align: left; 
+            font-size: 14px; }
+        th { 
+            background: #2e7d32; 
+            color: #fff; }
+        tr:hover td { 
+            background: #f1f8f1; }
+        .btn { 
+            padding: 7px 12px; 
+            border: 0; 
+            border-radius: 4px; 
+            color: #fff; 
+            text-decoration: none; 
+            font-size: 13px; 
+            cursor: pointer; 
+            display: inline-block; }
+        .btn-tambah { 
+            background: #2e7d32; }
+        .btn-cari { 
+            background: #455a64; }
+        .btn-edit { 
+            background: #1565c0; }
+        .btn-hapus { 
+            background: #c62828; }
+        .notif { 
+            padding: 10px 14px; 
+            border-radius: 4px; 
+            margin-bottom: 14px; }
+        .sukses { 
+            background: #e8f5e9; 
+            color: #2e7d32; }
+        .gagal { 
+            background: #ffebee; 
+            color: #c62828; }
+        .kosong { 
+            text-align: center; 
+            color: #777; 
+            padding: 20px; }
     </style>
 </head>
 <body>
