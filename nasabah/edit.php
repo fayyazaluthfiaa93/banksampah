@@ -1,6 +1,6 @@
 <?php
 //ini untuk koneksi//
-include '../connect.php';
+include __DIR__ . '/../connect.php';
 
 if (isset($_GET['id'])) {
     $id_nasabah = $_GET['id'];
@@ -51,6 +51,9 @@ if (isset($_POST['update'])) {
     </style>
 </head>
 <body>
+    <div class="app">
+    <?php include $_SERVER['DOCUMENT_ROOT'] . "/banksampah/includess/sidebar.php"; ?>
+    
     <div class="container py-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
