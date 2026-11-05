@@ -1,5 +1,5 @@
 <?php
-include '../connect.php'; 
+include __DIR__ . '/../connect.php';
 
 // Proses Tambah Data
 if (isset($_POST['tambah'])) {
@@ -43,6 +43,8 @@ $jumlah_data = ($result) ? mysqli_num_rows($result) : 0;
     </style>
 </head>
 <body>
+    <div class="app">
+    <?php include $_SERVER['DOCUMENT_ROOT'] . "/banksampah/includess/sidebar.php"; ?>
 
     <div class="container py-5">
         <div class="row mb-4">
