@@ -111,6 +111,9 @@ if (isset($_GET['status'])) {
     </style>
 </head>
 <body>
+    <div class="app">
+    <?php include $_SERVER['DOCUMENT_ROOT'] . "/banksampah/includess/sidebar.php"; ?>
+    
     <div class="box">
         <h2>Data Petugas</h2>
 
