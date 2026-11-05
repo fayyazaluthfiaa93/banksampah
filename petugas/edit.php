@@ -2,17 +2,17 @@
 include '../connect.php';
 /** @var mysqli $koneksi */
 
-if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+if (!isset($_GET['id']) || $_GET['id'] === '') {
     header("Location: index.php");
     exit;
 }
 
-$id = (int) $_GET['id'];
+$id = $_GET['id'];
 $error = '';
 
 // Ambil data petugas
-$stmt = $koneksi->prepare("SELECT * FROM petugas WHERE id_petugas = ?");
-$stmt->bind_param("i", $id);
+$stmt = $koneksi->prepare("SELECT * FROM petugas WHERE petugas_id = ?");
+$stmt->bind_param("s", $id);
 $stmt->execute();
 $data = $stmt->get_result()->fetch_assoc();
 
@@ -22,44 +22,19 @@ if (!$data) {
 }
 
 if (isset($_POST['update'])) {
-    $nama     = trim($_POST['nama_petugas']);
-    $username = trim($_POST['username']);
-    $password = $_POST['password'];
-    $no_hp    = trim($_POST['no_hp']);
+    $nama = trim($_POST['nama_petugas']);
 
-    if ($nama === '' || $username === '') {
-        $error = 'Nama dan username wajib diisi.';
+    if ($nama === '') {
+        $error = 'Nama petugas wajib diisi.';
     } else {
-        // Cek username dipakai petugas lain
-        $cek = $koneksi->prepare("SELECT id_petugas FROM petugas WHERE username = ? AND id_petugas != ?");
-        $cek->bind_param("si", $username, $id);
-        $cek->execute();
-        $cek->store_result();
+        $up = $koneksi->prepare("UPDATE petugas SET nama_petugas = ? WHERE petugas_id = ?");
+        $up->bind_param("ss", $nama, $id);
 
-        if ($cek->num_rows > 0) {
-            $error = 'Username sudah digunakan petugas lain.';
+        if ($up->execute()) {
+            header("Location: index.php?status=edit");
+            exit;
         } else {
-            if ($password !== '') {
-                // Password diganti
-                $hash = password_hash($password, PASSWORD_DEFAULT);
-                $up = $koneksi->prepare(
-                    "UPDATE petugas SET nama_petugas = ?, username = ?, password = ?, no_hp = ? WHERE id_petugas = ?"
-                );
-                $up->bind_param("ssssi", $nama, $username, $hash, $no_hp, $id);
-            } else {
-                // Password tidak diubah
-                $up = $koneksi->prepare(
-                    "UPDATE petugas SET nama_petugas = ?, username = ?, no_hp = ? WHERE id_petugas = ?"
-                );
-                $up->bind_param("sssi", $nama, $username, $no_hp, $id);
-            }
-
-            if ($up->execute()) {
-                header("Location: index.php?status=edit");
-                exit;
-            } else {
-                $error = 'Gagal mengubah data: ' . $up->error;
-            }
+            $error = 'Gagal mengubah data: ' . $up->error;
         }
     }
 }
@@ -72,12 +47,10 @@ if (isset($_POST['update'])) {
     <title>Edit Petugas</title>
     <style>
         body { 
-        font-family: 
-        Arial, sans-serif; 
-        background: #f4f6f8; 
-        margin: 0; 
-        padding: 30px; 
-        }
+            font-family: Arial, sans-serif; 
+            background: #f4f6f8; 
+            margin: 0; 
+            padding: 30px; }
         .box { 
             max-width: 420px; 
             margin: auto; 
@@ -98,8 +71,10 @@ if (isset($_POST['update'])) {
             box-sizing: border-box; 
             border: 1px solid #ccc; 
             border-radius: 4px; }
-        small { 
-            color: #777; }
+        input
+        [readonly] { 
+            background: #eee; 
+            color: #666; }
         .btn { 
             margin-top: 18px; 
             padding: 9px 16px; 
@@ -132,18 +107,11 @@ if (isset($_POST['update'])) {
         <?php endif; ?>
 
         <form method="post">
+            <label>ID Petugas</label>
+            <input type="text" value="<?= htmlspecialchars($data['petugas_id']) ?>" readonly>
+
             <label>Nama Petugas</label>
-            <input type="text" name="nama_petugas" value="<?= htmlspecialchars($_POST['nama_petugas'] ?? $data['nama_petugas']) ?>" required>
-
-            <label>Username</label>
-            <input type="text" name="username" value="<?= htmlspecialchars($_POST['username'] ?? $data['username']) ?>" required>
-
-            <label>Password</label>
-            <input type="password" name="password">
-            <small>Kosongkan jika tidak ingin mengganti password.</small>
-
-            <label>No. HP</label>
-            <input type="text" name="no_hp" value="<?= htmlspecialchars($_POST['no_hp'] ?? $data['no_hp']) ?>">
+            <input type="text" name="nama_petugas" maxlength="100" value="<?= htmlspecialchars($_POST['nama_petugas'] ?? $data['nama_petugas']) ?>" required>
 
             <button type="submit" name="update" class="btn btn-update">Update</button>
             <a href="index.php" class="btn btn-batal">Batal</a>
