@@ -1,4 +1,5 @@
 <?php
+//ini untuk koneksi//
 include '../connect.php';
 
 if (isset($_GET['id'])) {
