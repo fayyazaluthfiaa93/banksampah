@@ -5,28 +5,25 @@ include '../connect.php';
 $error = '';
 
 if (isset($_POST['simpan'])) {
-    $nama     = trim($_POST['nama_petugas']);
-    $username = trim($_POST['username']);
-    $password = $_POST['password'];
-    $no_hp    = trim($_POST['no_hp']);
+    $id   = trim($_POST['petugas_id']);
+    $nama = trim($_POST['nama_petugas']);
 
-    if ($nama === '' || $username === '' || $password === '') {
-        $error = 'Nama, username, dan password wajib diisi.';
+    if ($id === '' || $nama === '') {
+        $error = 'ID petugas dan nama petugas wajib diisi.';
+    } elseif (strlen($id) > 10) {
+        $error = 'ID petugas maksimal 10 karakter.';
     } else {
-        // Cek username sudah dipakai atau belum
-        $cek = $koneksi->prepare("SELECT id_petugas FROM petugas WHERE username = ?");
-        $cek->bind_param("s", $username);
+        // Cek ID sudah dipakai atau belum
+        $cek = $koneksi->prepare("SELECT petugas_id FROM petugas WHERE petugas_id = ?");
+        $cek->bind_param("s", $id);
         $cek->execute();
         $cek->store_result();
 
         if ($cek->num_rows > 0) {
-            $error = 'Username sudah digunakan.';
+            $error = 'ID petugas sudah digunakan.';
         } else {
-            $hash = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $koneksi->prepare(
-                "INSERT INTO petugas (nama_petugas, username, password, no_hp) VALUES (?, ?, ?, ?)"
-            );
-            $stmt->bind_param("ssss", $nama, $username, $hash, $no_hp);
+            $stmt = $koneksi->prepare("INSERT INTO petugas (petugas_id, nama_petugas) VALUES (?, ?)");
+            $stmt->bind_param("ss", $id, $nama);
 
             if ($stmt->execute()) {
                 header("Location: index.php?status=tambah");
@@ -65,17 +62,11 @@ if (isset($_POST['simpan'])) {
         <?php endif; ?>
 
         <form method="post">
+            <label>ID Petugas</label>
+            <input type="text" name="petugas_id" maxlength="10" value="<?= htmlspecialchars($_POST['petugas_id'] ?? '') ?>" required>
+
             <label>Nama Petugas</label>
-            <input type="text" name="nama_petugas" value="<?= htmlspecialchars($_POST['nama_petugas'] ?? '') ?>" required>
-
-            <label>Username</label>
-            <input type="text" name="username" value="<?= htmlspecialchars($_POST['username'] ?? '') ?>" required>
-
-            <label>Password</label>
-            <input type="password" name="password" required>
-
-            <label>No. HP</label>
-            <input type="text" name="no_hp" value="<?= htmlspecialchars($_POST['no_hp'] ?? '') ?>">
+            <input type="text" name="nama_petugas" maxlength="100" value="<?= htmlspecialchars($_POST['nama_petugas'] ?? '') ?>" required>
 
             <button type="submit" name="simpan" class="btn btn-simpan">Simpan</button>
             <a href="index.php" class="btn btn-batal">Batal</a>
