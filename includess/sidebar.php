@@ -151,7 +151,8 @@ $subActive = fn($folder, $file) => strpos($uri, $base . $folder . '/' . $file) !
       <ul class="sb-sub">
         <li><a class="<?= $subActive('transaksi', 'setor.php') ?>" href="<?= $base ?>transaksi/setor.php">Setor</a></li>
         <li><a class="<?= $subActive('transaksi', 'tarik.php') ?>" href="<?= $base ?>transaksi/tarik.php">Tarik</a></li>
-        <li><a class="<?= $subActive('transaksi', 'riwayat.php') ?>" href="<?= $base ?>transaksi/riwayat.php">Riwayat</a></li>
+        <li><a class="<?= $subActive('transaksi', 'riwayat.php') ?>" href="<?= $base ?>transaksi/riwayat.php">Riwayat Setoran</a></li>
+        <li><a class="<?= $subActive('transaksi', 'riwayat_tarik.php') ?>" href="<?= $base ?>transaksi/riwayat.php">Riwayat Penarikan</a></li>
       </ul>
     </li>
 
